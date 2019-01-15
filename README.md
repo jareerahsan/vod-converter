@@ -1,5 +1,5 @@
 ## Update
-This repository is a fork from [vod-converter-for-python2&3](https://github.com/nghiattran/vod-converter). The primary reason was to add difficulty calculation in KITTIIngestor and support it in VOCEgestor. Look at [`kitti.py`](https://github.com/jareerahsan/vod-converter/blob/286e33ca5fde426f5bc043281d43cd5241ccb395/vod_converter/kitti.py#L127) to generate a diffculty specific dataset.
+This repository is a fork from [vod-converter for python2&3](https://github.com/nghiattran/vod-converter). The primary reason was to add difficulty calculation in KITTIIngestor and support it in VOCEgestor. Look at [`kitti.py`](https://github.com/jareerahsan/vod-converter/blob/286e33ca5fde426f5bc043281d43cd5241ccb395/vod_converter/kitti.py#L127) to generate a diffculty specific dataset.
 
 +Fixed some minor bugs in `VOC.py`
 
