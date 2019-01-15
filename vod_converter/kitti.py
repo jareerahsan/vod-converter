@@ -116,10 +116,7 @@ class KITTIIngestor(Ingestor):
                 label = row[0]
                 truncated = float(row[1])
                 occluded = int(row[2])
-                x1 = max(0.0, x1)
-                y1 = max(0.0, y1)
-                x2 = min(1023, x2)
-                y2 = min(511, y2)
+                #occlusion and truncation are preserved as is in VOC, they do not conform to VOC expectations
                 truncated = max(0.0, min(1.0, truncated))
                 occluded = max(0, min(3, occluded))
                 difficult = self._get_difficulty((y2-y1), truncated, occluded)
