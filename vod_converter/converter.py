@@ -44,6 +44,9 @@ DETECTION_SCHEMA = {
     'type': 'object',
     'properties': {
         'label': {'type': 'string'},
+        'truncated': {'type': 'number', 'minimum': 0, 'maximum': 1},
+        'occluded': {'type': 'integer', 'minimum': 0, 'maximum': 3 },
+        'difficult': {'type': 'integer', 'minimum': 0, 'maximum': 3 },
         'top': {'type': 'number', 'minimum': 0},
         'left': {'type': 'number', 'minimum': 0},
         'right': {'type': 'number', 'minimum': 0},
@@ -143,6 +146,13 @@ def convert(from_path, ingestor, to_path, egestor, select_only_known_labels, fil
 
 def validate_image_detections(image_detections):
     for i, image_detection in enumerate(image_detections):
+        for detection in image_detection['detections']:
+            if not 'truncated' in detection:
+                detection['truncated'] = 0.0
+            if not 'occluded' in detection:
+                detection['occluded'] = 0
+            if not 'difficult' in detection:
+                detection['difficult'] = 0
         try:
             validate_schema(image_detection, IMAGE_DETECTION_SCHEMA)
         except SchemaError as se:
@@ -180,6 +190,3 @@ def convert_labels(image_detections, expected_labels,
             final_image_detections.append(image_detection)
 
     return final_image_detections
-
-
-

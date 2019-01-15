@@ -89,6 +89,24 @@ class KITTIIngestor(Ingestor):
             'detections': detections
         }
 
+    def _get_difficulty(self, height, truncation, occlusion):
+        """Set difficulty level according to definition here:
+
+        http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=2d
+
+        0 Easy
+        1 Moderate
+        2 Hard
+        3 Unknown (Not part of the Kitti Eval, Read:Absurd difficulty) 
+        """
+        if (height >= 40 and occlusion == 0 and truncation <= 0.15):
+            return 0
+        elif(height >= 25 and occlusion <= 1 and truncation <= 0.3):
+            return 1
+        elif(height >= 25 and occlusion <= 2 and truncation <=0.5):
+            return 2
+        return 3
+
     def _get_detections(self, detections_fpath):
         detections = []
         with open(detections_fpath) as f:
@@ -96,12 +114,28 @@ class KITTIIngestor(Ingestor):
             for row in f_csv:
                 x1, y1, x2, y2 = map(float, row[4:8])
                 label = row[0]
+                truncated = float(row[1])
+                occluded = int(row[2])
+                x1 = max(0.0, x1)
+                y1 = max(0.0, y1)
+                x2 = min(1023, x2)
+                y2 = min(511, y2)
+                truncated = max(0.0, min(1.0, truncated))
+                occluded = max(0, min(3, occluded))
+                difficult = self._get_difficulty((y2-y1), truncated, occluded)
+                # Here we can choose a particular difficulty (skipping 'Unknown' for now)
+                if difficult == 3:
+                    continue
+
                 detections.append({
                     'label': label,
-                    'left': max(0.0, x1),
-                    'right': min(1023, x2),
-                    'top': max(0.0, y1),
-                    'bottom': min(511, y2)
+                    'truncated': truncated,
+                    'occluded': occluded,
+                    'difficult': difficult,
+                    'left': x1,
+                    'right': x2,
+                    'top': y1,
+                    'bottom': y2
                 })
         return detections
 
@@ -169,6 +203,3 @@ class KITTIEgestor(Egestor):
                     y2 = detection['bottom']
                     kitti_row[4:8] = x1, y1, x2, y2
                     csvwriter.writerow(kitti_row)
-
-
-
